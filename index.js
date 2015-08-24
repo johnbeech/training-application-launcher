@@ -1,34 +1,44 @@
 var express = require('express');
 var app = express();
 
-var applicationConfigAdapter = require('./lib/applicationConfigAdapter/command');
+var deviceIdentification = require('./lib/deviceIdentification/command');
+var eventReporter = require('./lib/eventReporter/command');
+
 var events = [];
 
-app.get('/applicationConfig', function(req, res) {
-    applicationConfigAdapter(function(error, event) {
-        eventReporter(error, event);
+app.get('/deviceIdentification', function(req, res) {
+    var deviceIdentificationRequestedEvent = {
+        userAgent: req.get('user-agent'),
+        params: req.params
+    };
+    eventReporter.logEvent(null, deviceIdentificationRequestedEvent);
+
+    deviceIdentification(deviceIdentificationRequestedEvent, function(error, event) {
+        eventReporter.logEvent(error, event);
         res.send(event);
     });
 });
 
-app.get('/events', function(req, res) {
-    res.send(events);
+app.get('/ait/launch.aitx', function(req, res) {
+    var requestEvent = {
+        userAgent: req.get('user-agent'),
+        params: req.params
+    };
+    eventReporter.logEvent(null, requestEvent);
+
+    deviceIdentification(requestEvent, function(error, event) {
+        eventReporter.logEvent(error, event);
+        res.send({
+            error: true,
+            message: 'Not implemented'
+        });
+    });
 });
 
-function eventReporter(error, event) {
-    events.push({
-        time: Date.now(),
-        error: error,
-        event: event
-    });
+app.get('/events', function(req, res) {
+    res.send(eventReporter.events);
+});
 
-    if(error) {
-        console.log('Error', error);
-    }
-    else {
-        console.log('Event', event);
-    }
-}
 
 var server = app.listen(9000, function() {
     var host = 'localhost';
