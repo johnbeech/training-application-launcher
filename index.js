@@ -3,15 +3,17 @@ var app = express();
 
 var deviceIdentification = require('./lib/deviceIdentification/command');
 var eventReporter = require('./lib/eventReporter/command');
+var isSupportedGenerator = require('./lib/isSupportedGenerator/command')
 
 var events = [];
 
 app.get('/deviceIdentification', function(req, res) {
-    var deviceIdentificationRequestedEvent = {
+    var requestEvent = {
         userAgent: req.get('user-agent'),
-        params: req.params
+        query: req.query,
+        url: req.originalUrl
     };
-    eventReporter.logEvent(null, deviceIdentificationRequestedEvent);
+    eventReporter.logEvent(null, requestEvent);
 
     deviceIdentification(deviceIdentificationRequestedEvent, function(error, event) {
         eventReporter.logEvent(error, event);
@@ -19,10 +21,24 @@ app.get('/deviceIdentification', function(req, res) {
     });
 });
 
+app.get('/ait/issupported', function(req, res) {
+    var requestEvent = {
+        userAgent: req.get('user-agent'),
+        query: req.query,
+        url: req.originalUrl
+    };
+    eventReporter.logEvent(null, requestEvent);
+
+    isSupportedGenerator(requestEvent, function(error, event) {
+        res.send(event);
+    });
+});
+
 app.get('/ait/launch.aitx', function(req, res) {
     var requestEvent = {
         userAgent: req.get('user-agent'),
-        params: req.params
+        query: req.query,
+        url: req.originalUrl
     };
     eventReporter.logEvent(null, requestEvent);
 
