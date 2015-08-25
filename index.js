@@ -15,7 +15,7 @@ app.get('/deviceIdentification', function(req, res) {
     };
     eventReporter.logEvent(null, requestEvent);
 
-    deviceIdentification(deviceIdentificationRequestedEvent, function(error, event) {
+    deviceIdentification(requestEvent, function(error, event) {
         eventReporter.logEvent(error, event);
         res.send(event);
     });
