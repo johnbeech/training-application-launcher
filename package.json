@@ -4,7 +4,7 @@
   "description": "A launcher for HTML/JS TV applications",
   "main": "index.js",
   "scripts": {
-    "start": "node ../tv-application-launcher",
+    "start": "node index.js",
     "test": "node node_modules/mocha/bin/mocha tests/*.js"
   },
   "author": "",
